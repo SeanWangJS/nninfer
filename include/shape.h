@@ -12,7 +12,7 @@ namespace tensor {
 
     struct Shape
     {
-        int size;
+        size_t size;
         int* shape;
         int dim;
 
@@ -23,6 +23,17 @@ namespace tensor {
             size = 1;
             for (int i = 0; i < dim; i++) {
                 size *= shape[i];
+            }
+        }
+        Shape(std::initializer_list<int> shape) {
+            this->dim = static_cast<int>(shape.size());
+            this->shape = new int[dim];
+            int i = 0;
+            size = 1;
+            for (auto it = shape.begin(); it != shape.end(); it++) {
+                this->shape[i] = *it;
+                size *= *it;
+                i++;
             }
         }
 
