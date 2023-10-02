@@ -69,7 +69,7 @@ Tensor<T> Tensor<T>::sub(int i) {
 
 template<>
 Tensor<int> Tensor<int>::random(Shape shape, int min, int max){
-    int size = shape.size;
+    size_t size = shape.size;
     int* data = new int[size];
     for (int i = 0; i < size; i++) {
         data[i] = math::randint(min, max);
@@ -79,7 +79,7 @@ Tensor<int> Tensor<int>::random(Shape shape, int min, int max){
 
 template<>
 Tensor<float> Tensor<float>::random(Shape shape, int min, int max){
-    int size = shape.size;
+    size_t size = shape.size;
     float* data = new float[size];
     for (int i = 0; i < size; i++) {
         data[i] = math::random(min, max);
