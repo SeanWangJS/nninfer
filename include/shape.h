@@ -41,6 +41,10 @@ namespace tensor {
             return shape[i];
         }
 
+        int operator[](int i) const {
+            return shape[i];
+        }
+
     };
 
     

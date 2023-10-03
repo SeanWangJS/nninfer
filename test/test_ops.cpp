@@ -75,7 +75,6 @@ TEST(Conv2dNaiveSingleTest, SimpleInput) {
     int stride_y = 1;
     int padding_x = 0;
     int padding_y = 0;
-    int use_bias = 0;
     Shape input_shape = Shape({3, 3});
     Shape kernel_shape = Shape({2, 2});
     Shape output_shape = Shape({2, 2});
@@ -84,7 +83,7 @@ TEST(Conv2dNaiveSingleTest, SimpleInput) {
     Tensor<float> kernel(kernel_data, kernel_shape);
     Tensor<float> output = Tensor<float>::zeros(output_shape);
 
-    conv2d_naive_single(input, kernel, output, stride_x, stride_y, padding_x, padding_y, use_bias);
+    conv2d_naive_single(input, kernel, output, stride_x, stride_y, padding_x, padding_y);
     float expect[] = {37, 47,
                       67, 77};
     float* actual = output.data();
@@ -110,12 +109,11 @@ TEST(Conv2dNaiveSingleTest, LargeInput) {
     int stride_y = 1;
     int padding_x = 0;
     int padding_y = 0;
-    int use_bias = 0;
 
     Tensor<float> input(input_data, input_shape);
     Tensor<float> kernel(kernel_data, kernel_shape);
     Tensor<float> output = Tensor<float>::zeros(output_shape);
-    conv2d_naive_single(input, kernel, output, stride_x, stride_y, padding_x, padding_y, use_bias);
+    conv2d_naive_single(input, kernel, output, stride_x, stride_y, padding_x, padding_y);
     
     EXPECT_EQ(output.data()[0], 63);
     EXPECT_EQ(output.data()[8], 171);
@@ -136,7 +134,6 @@ TEST(Conv2dNaiveSingleTest, Stride) {
     int stride_y = 2;
     int padding_x = 0;
     int padding_y = 0;
-    int use_bias = 0;
     Shape input_shape = Shape({4, 4});
     Shape kernel_shape = Shape({2, 2});
     Shape output_shape = Shape({2, 2});
@@ -145,7 +142,7 @@ TEST(Conv2dNaiveSingleTest, Stride) {
     Tensor<float> kernel(kernel_data, kernel_shape);
     Tensor<float> output = Tensor<float>::zeros(output_shape);
 
-    conv2d_naive_single(input, kernel, output, stride_x, stride_y, padding_x, padding_y, use_bias);
+    conv2d_naive_single(input, kernel, output, stride_x, stride_y, padding_x, padding_y);
     float expect[] = {14, 22,
                       46, 54};
     float* actual = output.data();
@@ -167,7 +164,6 @@ TEST(Conv2NavieSingleTest, Padding) {
     int stride_y = 1;
     int padding_x = 1;
     int padding_y = 1;
-    int use_bias = 0;
     Shape input_shape = Shape({3, 3});
     Shape kernel_shape = Shape({3, 3});
     Shape output_shape = Shape({3, 3});
@@ -176,7 +172,7 @@ TEST(Conv2NavieSingleTest, Padding) {
     Tensor<float> kernel(kernel_data, kernel_shape);
     Tensor<float> output = Tensor<float>::zeros(output_shape);
 
-    conv2d_naive_single(input, kernel, output, stride_x, stride_y, padding_x, padding_y, use_bias);
+    conv2d_naive_single(input, kernel, output, stride_x, stride_y, padding_x, padding_y);
     float expect[] = {12, 21, 16,
                       27, 45, 33,
                       24, 39, 28};
@@ -185,3 +181,98 @@ TEST(Conv2NavieSingleTest, Padding) {
         EXPECT_EQ(actual[i], expect[i]);
     }
 }
+
+// Test that the function produces the correct output for a simple input and kernel
+TEST(Conv2dNaiveTest, SimpleInput) {
+    float input_data[] = {1, 2, 3, 
+                          4, 5, 6, 
+                          7, 8, 9};
+    float kernel_data[] = {1, 2, 
+                           3, 4};                          
+    Shape input_shape = Shape({1, 3, 3});
+    Shape kernel_shape = Shape({1, 1, 2, 2});
+    Shape output_shape = Shape({1, 2, 2});
+    int stride_x = 1;
+    int stride_y = 1;
+    int padding_x = 0;
+    int padding_y = 0;
+    int groups = 1;
+    Tensor<float> input(input_data, input_shape);
+    Tensor<float> kernel(kernel_data, kernel_shape);
+    Tensor<float> output = Tensor<float>::zeros(output_shape);
+
+    conv2d_naive(input, kernel, output, stride_x, stride_y, padding_x, padding_y, groups);
+    float expect[] = {37, 47, 
+                      67, 77};
+    float* actual = output.data();
+    for(int i = 0; i < output_shape.size; i++) {
+        EXPECT_EQ(actual[i], expect[i]);
+    }
+}
+
+// Test that the function produces the correct output for multiple channels
+TEST(Conv2dNaiveTest, MultipleChannels) {
+    Shape input_shape = Shape({2, 3, 3});
+    Shape output_shape = Shape({3, 2, 2});
+    Shape kernel_shape = Shape({3, 2, 2, 2});
+    float input_data[] = {1, 2, 3, 
+                        4, 5, 6, 
+                        7, 8, 9, 
+                        
+                        10, 11, 12,
+                        13, 14, 15,
+                        16, 17, 18};
+    float kernel_data[] = {1, 1, 1, 1,
+                           1, 1, 1, 1,
+                           
+                           1, 1, 1, 1,
+                           1, 1, 1, 1,
+                           
+                           1, 1, 1, 1,
+                           1, 1, 1, 1};
+
+    Tensor<float> input(input_data, input_shape);
+    Tensor<float> kernel(kernel_data, kernel_shape);
+    Tensor<float> output = Tensor<float>::zeros(output_shape);                           
+    int stride_x = 1;
+    int stride_y = 1;
+    int padding_x = 0;
+    int padding_y = 0;
+    int groups = 1;
+    conv2d_naive(input, kernel, output, stride_x, stride_y, padding_x, padding_y, groups);
+    EXPECT_EQ(output.sub(0).data()[0], 60); // first element
+    EXPECT_EQ(output.sub(2).data()[3], 92); // last element
+}
+
+// // Test that the function produces the correct output when using bias
+// TEST(Conv2dNaiveTest, UseBias) {
+//     Tensor<float> input({1, 3, 3}, {1, 2, 3, 4, 5, 6, 7, 8, 9});
+//     Tensor<float> kernel({1, 2, 2}, {1, 2, 3, 4});
+//     Tensor<float> bias({1, 2, 2}, {1, 2, 3, 4});
+//     Tensor<float> output({1, 2, 2}, {0, 0, 0, 0});
+//     int stride_x = 1;
+//     int stride_y = 1;
+//     int padding_x = 0;
+//     int padding_y = 0;
+//     int groups = 1;
+//     int use_bias = 1;
+//     conv2d_naive(input, kernel, output, stride_x, stride_y, padding_x, padding_y, groups);
+//     Tensor<float> expected_output({1, 2, 2}, {38, 49, 70, 81});
+//     EXPECT_EQ(output, expected_output);
+// }
+
+// // Test that the function produces the correct output when using groups
+// TEST(Conv2dNaiveTest, UseGroups) {
+//     Tensor<float> input({2, 3, 3}, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34});
+//     Tensor<float> kernel({2, 2, 2}, {1, 2, 3, 4, 5, 6, 7, 8});
+//     Tensor<float> output({2, 2, 2}, {0, 0, 0, 0, 0, 0, 0, 0});
+//     int stride_x = 1;
+//     int stride_y = 1;
+//     int padding_x = 0;
+//     int padding_y = 0;
+//     int groups = 2;
+//     int use_bias = 0;
+//     conv2d_naive(input, kernel, output, stride_x, stride_y, padding_x, padding_y, groups);
+//     Tensor<float> expected_output({2, 2, 2}, {37, 47, 67, 77, 157, 167, 187, 197});
+//     EXPECT_EQ(output, expected_output);
+// }

@@ -1,3 +1,4 @@
 prompts/
 .vscode/
 build/
+*.ipynb

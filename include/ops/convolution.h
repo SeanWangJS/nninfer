@@ -37,8 +37,7 @@ inline void conv2d_naive_single(const Tensor<T> &input,
                          const int stride_x,
                          const int stride_y,
                          const int padding_x,
-                         const int padding_y,
-                         const int use_bias) {
+                         const int padding_y) {
     // assert the dimension of input must be 2
     assert(input.shape().dim == 2 && "The dimension of input must be 2 for single channel 2d-convolution");
 
@@ -68,6 +67,11 @@ inline void conv2d_naive_single(const Tensor<T> &input,
     }
 }    
 
+/**
+ * :param input: input tensor, shape is [C_in, ih, iw]
+ * :param weight: weight tensor, shape is [C_out, C_in, kh, kw]
+ * :param output: output tensor, shape is [C_out, oh, ow]
+ * **/
 template<typename T>
 void conv2d_naive(const Tensor<T> &input, 
             const Tensor<T> &weight, 
@@ -76,8 +80,7 @@ void conv2d_naive(const Tensor<T> &input,
             const int stride_y, 
             const int padding_x,
             const int padding_y, 
-            const int groups,
-            const int use_bias) {
+            const int groups) {
 
     // assert the dimension of input must be 3
     assert(input.shape().dim == 3 && "The dimension of input must be 3 for 2d-convolution");
@@ -89,23 +92,28 @@ void conv2d_naive(const Tensor<T> &input,
     Shape input_shape = input.shape();
     Shape weight_shape = weight.shape();
 
-    int num_channel = input_shape.shape[0];
-    int ih = input_shape.shape[1];
-    int iw = input_shape.shape[2];
+    int in_channels = input_shape[0];
+    int ih = input_shape[1];
+    int iw = input_shape[2];
 
-    int num_kernel = weight_shape.shape[0];
-    int kh = weight_shape.shape[1];
-    int kw = weight_shape.shape[2];
+    int num_kernel = weight_shape[0];
+    int kh = weight_shape[1];
+    int kw = weight_shape[2];
+
+    int out_channels = output.shape()[0];
 
     if (groups > 1) {
 
     }else {
-        for(int i = 0; i < num_kernel; i++) {
-            Tensor<T> subWeight = weight.sub(i);
+        for(int i = 0; i < out_channels; i++) {
+            Tensor<T> subOutput = output.sub(i);
+            for (int j = 0; j < in_channels; j++) {
+                Tensor<T> subInput = input.sub(j);
+                Tensor<T> subWeight = weight.sub(i).sub(j);
+                conv2d_naive_single(subInput, subWeight, subOutput, stride_x, stride_y, padding_x, padding_y);
+            }
         }
     }
-
-
 }
     
 } // namespace ops

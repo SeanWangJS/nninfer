@@ -29,6 +29,8 @@ namespace tensor {
 
         Shape shape() const;
 
+        Tensor<T> sub(int i) const;
+
         Tensor<T> sub(int i);
 
         static Tensor<T> random(Shape shape, int min = 0, int max = 1);

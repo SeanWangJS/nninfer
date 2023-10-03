@@ -67,6 +67,24 @@ Tensor<T> Tensor<T>::sub(int i) {
 
 }
 
+template<typename T>
+Tensor<T> Tensor<T>::sub(int i) const {
+    const Shape _shape = this->shape();
+    if (i >= _shape.shape[0]) {
+        throw std::invalid_argument("Index out of range");
+    }
+    int subDim = _shape.dim - 1;
+    if (subDim <= 0) {
+        throw std::invalid_argument("Cannot sub a tensor with scalar");
+    }
+    int* s = new int[subDim];
+    for (int j = 0; j < subDim; j++) {
+        s[j] = _shape[j + 1];
+    }
+    Shape subShape(s, subDim);
+    return Tensor(this->mem + i * subShape.size, subShape);
+}
+
 template<>
 Tensor<int> Tensor<int>::random(Shape shape, int min, int max){
     size_t size = shape.size;
