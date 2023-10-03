@@ -40,7 +40,7 @@ namespace tensor {
         /**
          * \brief Get a sub tensor from a tensor
          * @param start the start index of the sub tensor
-         * @param end the end index of the sub tensor, inclusive
+         * @param end the end index of the sub tensor, not included
          * **/
         Tensor<T> sub(int start, int end) const;
 

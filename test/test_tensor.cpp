@@ -106,7 +106,7 @@ TEST(sub_tensor, sub_range_tensor) {
     Shape shape = Shape({4, 5});
     Tensor<int> t = Tensor<int>::arange(1, 20, 1).reshape(shape);
 
-    Tensor<int> subT = t.sub(1, 2);
+    Tensor<int> subT = t.sub(1, 3);
 
     EXPECT_EQ(subT.shape().size, 10);
     EXPECT_EQ(subT.data()[0], 6);
@@ -117,7 +117,7 @@ TEST(sub_tensor, sub_tensor_bound_case) {
     Shape shape = Shape({4, 5});
     Tensor<int> t = Tensor<int>::arange(1, 20, 1).reshape(shape);
 
-    Tensor<int> subT = t.sub(1, 1);
+    Tensor<int> subT = t.sub(1, 2);
 
     EXPECT_EQ(subT.shape().size, 5);
     EXPECT_EQ(subT.data()[0], 6);

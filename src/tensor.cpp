@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 
 #include "tensor.h"
 #include "math_op.h"
@@ -9,11 +10,6 @@ namespace tensor{
 
 template class Tensor<int>;
 template class Tensor<float>;
-
-// template<typename T>
-// static Tensor<T> Tensor<T>::random(Shape shape){
-
-// }
 
 template<typename T>
 Tensor<T>::Tensor() = default;
@@ -87,8 +83,8 @@ Tensor<T> Tensor<T>::sub(int i) const {
 
 template<typename T>
 Tensor<T> Tensor<T>::sub(int start, int end) {
-    if (start > end) {
-        throw std::invalid_argument("Start index must not greater than end index");
+    if (start >= end) {
+        throw std::invalid_argument("Start index must smaller than end index");
     }
     if (end > _shape.shape[0]) {
         throw std::invalid_argument("Index out of range");
@@ -98,24 +94,20 @@ Tensor<T> Tensor<T>::sub(int start, int end) {
         throw std::invalid_argument("Cannot sub a tensor with scalar");
     }
     int* s = new int[dim];
-    s[0] = end - start + 1;
+    s[0] = end - start;
     int stride = 1;
     for (int j = 1; j < dim; j++) {
         s[j] = _shape[j];
         stride *= _shape[j];
     }
     Shape subShape(s, dim);
-    // int stride = 1;
-    // for (int i = 1; i < dim; i++) {
-    //     stride *= _shape[i];
-    // }
     return Tensor(this->mem + start * stride, subShape);
 }
 
 template<typename T>
 Tensor<T> Tensor<T>::sub(int start, int end) const {
-    if (start > end) {
-        throw std::invalid_argument("Start index must not greater than end index");
+    if (start >= end) {
+        throw std::invalid_argument("Start index must smaller than end index");
     }
     if (end > _shape.shape[0]) {
         throw std::invalid_argument("Index out of range");
@@ -127,7 +119,7 @@ Tensor<T> Tensor<T>::sub(int start, int end) const {
         throw std::invalid_argument("Cannot sub a tensor with scalar");
     }
     int* s = new int[dim];
-    s[0] = end - start + 1;
+    s[0] = end - start;
     int stride = 1;
     for (int j = 1; j < dim; j++) {
         s[j] = _shape[j];
@@ -160,7 +152,8 @@ Tensor<float> Tensor<float>::random(Shape shape, int min, int max){
 
 template<>
 Tensor<int> Tensor<int>::arange(size_t start, size_t end, int step){
-    size_t size = (end - start) / step + 1;
+    
+    size_t size = static_cast<int>(ceil((end - start) / static_cast<float>(step)));
     int* data = new int[size];
     for (int i = 0; i < size; i++) {
         data[i] = static_cast<int>(start + i * step);
@@ -170,7 +163,7 @@ Tensor<int> Tensor<int>::arange(size_t start, size_t end, int step){
 
 template<>
 Tensor<float> Tensor<float>::arange(size_t start, size_t end, int step){
-    size_t size = (end - start) / step + 1;
+    size_t size = static_cast<int>(ceil((end - start) / static_cast<float>(step)));
     float* data = new float[size];
     for (int i = 0; i < size; i++) {
         data[i] = static_cast<float>(start + i * step);
