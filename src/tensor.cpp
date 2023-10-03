@@ -85,6 +85,58 @@ Tensor<T> Tensor<T>::sub(int i) const {
     return Tensor(this->mem + i * subShape.size, subShape);
 }
 
+template<typename T>
+Tensor<T> Tensor<T>::sub(int start, int end) {
+    if (start > end) {
+        throw std::invalid_argument("Start index must not greater than end index");
+    }
+    if (end > _shape.shape[0]) {
+        throw std::invalid_argument("Index out of range");
+    }
+    int dim = _shape.dim;
+    if (dim <= 0) {
+        throw std::invalid_argument("Cannot sub a tensor with scalar");
+    }
+    int* s = new int[dim];
+    s[0] = end - start + 1;
+    int stride = 1;
+    for (int j = 1; j < dim; j++) {
+        s[j] = _shape[j];
+        stride *= _shape[j];
+    }
+    Shape subShape(s, dim);
+    // int stride = 1;
+    // for (int i = 1; i < dim; i++) {
+    //     stride *= _shape[i];
+    // }
+    return Tensor(this->mem + start * stride, subShape);
+}
+
+template<typename T>
+Tensor<T> Tensor<T>::sub(int start, int end) const {
+    if (start > end) {
+        throw std::invalid_argument("Start index must not greater than end index");
+    }
+    if (end > _shape.shape[0]) {
+        throw std::invalid_argument("Index out of range");
+    }
+
+    Shape _shape = this->shape();
+    int dim = _shape.dim;
+    if (dim <= 0) {
+        throw std::invalid_argument("Cannot sub a tensor with scalar");
+    }
+    int* s = new int[dim];
+    s[0] = end - start + 1;
+    int stride = 1;
+    for (int j = 1; j < dim; j++) {
+        s[j] = _shape[j];
+        stride *= _shape[j];
+    }
+    Shape subShape(s, dim);
+    return Tensor(this->mem + start * stride, subShape);
+}
+
 template<>
 Tensor<int> Tensor<int>::random(Shape shape, int min, int max){
     size_t size = shape.size;

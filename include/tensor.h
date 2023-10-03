@@ -29,9 +29,22 @@ namespace tensor {
 
         Shape shape() const;
 
+        /**
+         * \brief Get a sub tensor from a tensor
+         * @param i the index of the sub tensor
+         * **/
         Tensor<T> sub(int i) const;
 
         Tensor<T> sub(int i);
+
+        /**
+         * \brief Get a sub tensor from a tensor
+         * @param start the start index of the sub tensor
+         * @param end the end index of the sub tensor, inclusive
+         * **/
+        Tensor<T> sub(int start, int end) const;
+
+        Tensor<T> sub(int start, int end);
 
         static Tensor<T> random(Shape shape, int min = 0, int max = 1);
 
@@ -114,7 +127,7 @@ namespace tensor {
                              const Tensor<T> &tensor) {
         const Shape shape = tensor.shape();
         int dim = shape.dim;
-        int size = shape.size;
+        size_t size = shape.size;
         T* data = tensor.data();
         if(dim == 1) {
             os << "[";
