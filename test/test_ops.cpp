@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "ops/convolution.h"
 #include <gtest/gtest.h>
 
@@ -244,22 +246,30 @@ TEST(Conv2dNaiveTest, MultipleChannels) {
     EXPECT_EQ(output.sub(2).data()[3], 92); // last element
 }
 
-// // Test that the function produces the correct output when using bias
-// TEST(Conv2dNaiveTest, UseBias) {
-//     Tensor<float> input({1, 3, 3}, {1, 2, 3, 4, 5, 6, 7, 8, 9});
-//     Tensor<float> kernel({1, 2, 2}, {1, 2, 3, 4});
-//     Tensor<float> bias({1, 2, 2}, {1, 2, 3, 4});
-//     Tensor<float> output({1, 2, 2}, {0, 0, 0, 0});
-//     int stride_x = 1;
-//     int stride_y = 1;
-//     int padding_x = 0;
-//     int padding_y = 0;
-//     int groups = 1;
-//     int use_bias = 1;
-//     conv2d_naive(input, kernel, output, stride_x, stride_y, padding_x, padding_y, groups);
-//     Tensor<float> expected_output({1, 2, 2}, {38, 49, 70, 81});
-//     EXPECT_EQ(output, expected_output);
-// }
+// Test that the function produces the correct output for multiple groups
+TEST(Conv2dNaiveTest, MultipleGroups) {
+
+    int stride_x = 1;
+    int stride_y = 1;
+    int padding_x = 0;
+    int padding_y = 0;
+    int groups = 2;
+    Shape input_shape = Shape({4, 3, 3});
+    Shape output_shape = Shape({6, 2, 2});
+    Shape kernel_shape = Shape({6, 4 / groups, 2, 2});
+
+    Tensor<float> input = Tensor<float>::arange(1, input_shape.size + 1, 1).reshape(input_shape);
+    // std::cout << input << std::endl;
+    Tensor<float> weight = Tensor<float>::ones(kernel_shape);
+    // std::cout << weight << std::endl;
+    Tensor<float> output = Tensor<float>::zeros(output_shape);
+    conv2d_naive(input, weight, output, stride_x, stride_y, padding_x, padding_y, groups);
+
+    // std::cout << output << std::endl;
+    EXPECT_EQ(output.sub(0).data()[0], 60); // first element
+    EXPECT_EQ(output.sub(5).data()[3], 236); // last element
+
+}
 
 // // Test that the function produces the correct output when using groups
 // TEST(Conv2dNaiveTest, UseGroups) {

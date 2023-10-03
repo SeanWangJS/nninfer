@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <iostream>
 
 #include "tensor.h"
 #include "shape.h"
@@ -103,7 +104,16 @@ void conv2d_naive(const Tensor<T> &input,
     int out_channels = output.shape()[0];
 
     if (groups > 1) {
+        int in_channels_per_group = in_channels / groups;
+        int out_channels_per_group = out_channels / groups;
+        int num_kernel_per_group = num_kernel / groups;
 
+        for(int group = 0; group < groups; group++) {
+            Tensor<T> group_input = input.sub(group * in_channels_per_group, (group + 1) * in_channels_per_group);
+            Tensor<T> group_weight = weight.sub(group * num_kernel_per_group, (group + 1) * num_kernel_per_group);
+            Tensor<T> group_output = output.sub(group * out_channels_per_group, (group + 1) * out_channels_per_group);
+            conv2d_naive(group_input, group_weight, group_output, stride_x, stride_y, padding_x, padding_y, 1);
+        }
     }else {
         for(int i = 0; i < out_channels; i++) {
             Tensor<T> subOutput = output.sub(i);
