@@ -106,6 +106,26 @@ Tensor<float> Tensor<float>::random(Shape shape, int min, int max){
     return Tensor(data, shape);
 }
 
+template<>
+Tensor<int> Tensor<int>::arange(size_t start, size_t end, int step){
+    size_t size = (end - start) / step + 1;
+    int* data = new int[size];
+    for (int i = 0; i < size; i++) {
+        data[i] = static_cast<int>(start + i * step);
+    }
+    return Tensor(data, Shape({static_cast<int>(size)}));
+}
+
+template<>
+Tensor<float> Tensor<float>::arange(size_t start, size_t end, int step){
+    size_t size = (end - start) / step + 1;
+    float* data = new float[size];
+    for (int i = 0; i < size; i++) {
+        data[i] = static_cast<float>(start + i * step);
+    }
+    return Tensor(data, Shape({static_cast<int>(size)}));
+}
+
 template <typename T>
 Tensor<T> Tensor<T>::zeros(Shape shape){
     size_t size = shape.size * sizeof(T);

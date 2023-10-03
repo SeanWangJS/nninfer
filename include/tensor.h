@@ -39,6 +39,8 @@ namespace tensor {
 
         static Tensor<T> ones(Shape shape);
 
+        static Tensor<T> arange(size_t start, size_t end, int step = 1);
+
         
     };
 

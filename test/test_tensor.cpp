@@ -84,3 +84,18 @@ TEST(subtensor, sub_a_scalar_error) {
     Tensor<int> t(data, shape);
     EXPECT_THROW(t.sub(0), std::invalid_argument);
 }
+
+TEST(arange, normal_input) {
+    Tensor<int> t = Tensor<int>::arange(0, 10, 1);
+    EXPECT_EQ(t.data()[0], 0);
+    EXPECT_EQ(t.data()[9], 9);
+}
+
+TEST(arange, undividable_input) {
+    Tensor<int> t = Tensor<int>::arange(0, 10, 3);
+    EXPECT_EQ(t.shape().size, 4);
+    EXPECT_EQ(t.data()[0], 0);
+    EXPECT_EQ(t.data()[1], 3);
+    EXPECT_EQ(t.data()[2], 6);
+    EXPECT_EQ(t.data()[3], 9);
+}
