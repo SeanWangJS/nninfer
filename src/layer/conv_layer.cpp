@@ -68,9 +68,26 @@ void Conv2d<T>::forward(const Tensor<T> &input, Tensor<T> &output) {
     int padding_y = this->padding.second;
     int groups = this->groups;
     Tensor<T> weight = this->weight;
-    conv2d_naive(input, weight, output, stride_x, stride_y, padding_x, padding_y, groups);
+    conv2d_batch(input, weight, output, stride_x, stride_y, padding_x, padding_y, groups);
 
 }
+
+// template <typename T>
+// Tensor<T> Conv2d<T>::forward(const Tensor<T> &input) {
+
+//     int stride_x = this->stride.first;
+//     int stride_y = this->stride.second;
+//     int padding_x = this->padding.first;
+//     int padding_y = this->padding.second;
+//     int groups = this->groups;
+//     Tensor<T> weight = this->weight;
+
+//     Tensor<T> output = Tensor<T>::zeros({this->out_channels, 1, 1});
+//     conv2d_naive(input, weight, output, stride_x, stride_y, padding_x, padding_y, groups);
+//     return output;
+
+
+// }
 
 } // namespace layer
 

@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
     return RUN_ALL_TESTS();
 }
 
-TEST(ConvLayer, ConvLayerConstructor) {
+TEST(ConvLayer, Constructor) {
 
     int in_channels = 2;
     int out_channels = 3;
@@ -34,4 +34,35 @@ TEST(ConvLayer, ConvLayerConstructor) {
     EXPECT_EQ(conv2d_layer.groups, groups);
     EXPECT_EQ(conv2d_layer.use_bias, use_bias);
 
+}
+
+TEST(ConvLayer, Forward) {
+
+    int in_channels = 4;
+    int out_channels = 6;
+    int kernel_size = 2;
+    int stride = 1;
+    int padding = 0;
+    int groups = 2;
+    bool use_bias = false;
+
+    Conv2d<float> conv2d_layer(in_channels, out_channels, kernel_size, stride, padding, groups, use_bias);
+
+    // customize weight
+    Shape weight_shape = conv2d_layer.weight.shape();
+    Tensor<float> weight = Tensor<float>::ones(weight_shape);
+    conv2d_layer.weight = weight;
+
+    // construct input tensor
+    Shape input_shape = Shape({1, in_channels, 3, 3});
+    Tensor<float> input = Tensor<float>::arange(1, input_shape.size + 1, 1).reshape(input_shape);
+
+    // construct output tensor
+    Shape output_shape = Shape({1, out_channels, 2, 2});
+    Tensor<float> output = Tensor<float>::zeros(output_shape);
+
+    conv2d_layer.forward(input, output);
+
+    EXPECT_EQ(output.sub(0).sub(0).data()[0], 60); // first element
+    EXPECT_EQ(output.sub(0).sub(5).data()[3], 236); // last element
 }

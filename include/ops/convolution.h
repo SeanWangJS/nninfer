@@ -120,12 +120,39 @@ void conv2d_naive(const Tensor<T> &input,
             for (int j = 0; j < in_channels; j++) {
                 Tensor<T> subInput = input.sub(j);
                 Tensor<T> subWeight = weight.sub(i).sub(j);
+
                 conv2d_naive_single(subInput, subWeight, subOutput, stride_x, stride_y, padding_x, padding_y);
             }
         }
     }
 }
     
+template <typename T>
+void conv2d_batch(
+    const Tensor<T> &input, 
+    const Tensor<T> &weight, 
+    Tensor<T> &output, 
+    const int stride_x,
+    const int stride_y, 
+    const int padding_x,
+    const int padding_y, 
+    const int groups
+) {
+
+    assert(input.shape().dim == 4 && "The dimension of input must be 4 for batch 2d-convolution");
+    assert(output.shape().dim == 4 && "The dimension of output must be 4 for batch 2d-convolution");
+
+    int batch_size = input.shape()[0];
+    for(int i = 0; i < batch_size; i++) {
+        
+        Tensor<T> subInput = input.sub(i);
+        Tensor<T> subOutput = output.sub(i);
+
+        conv2d_naive(subInput, weight, subOutput, stride_x, stride_y, padding_x, padding_y, groups);
+    }
+
+}
+
 } // namespace ops
 
 } // namespace nninfer
