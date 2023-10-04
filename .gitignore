@@ -2,3 +2,5 @@ prompts/
 .vscode/
 build/
 *.ipynb
+*.exe
+*.obj
