@@ -34,7 +34,7 @@ class Conv2d : public BaseLayer<T>
         void forward(const Tensor<T> &input, 
                      Tensor<T> &output) override;
 
-        // Tensor<T> forward(const Tensor<T> &input) override;
+        Tensor<T> forward(const Tensor<T> &input) override;
 
 };    
 

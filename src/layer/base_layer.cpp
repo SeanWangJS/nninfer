@@ -18,6 +18,12 @@ void BaseLayer<T>::forward(const Tensor<T> &input, Tensor<T> &output)
 {
     throw std::exception("Not implemented");
 }
+
+template <typename T>
+Tensor<T> BaseLayer<T>::forward(const Tensor<T> &input)
+{
+    throw std::exception("Not implemented");
+}
     
 } // namespace layer
 
