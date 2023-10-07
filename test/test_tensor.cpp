@@ -123,3 +123,23 @@ TEST(sub_tensor, sub_tensor_bound_case) {
     EXPECT_EQ(subT.data()[0], 6);
     EXPECT_EQ(subT.data()[4], 10);
 }
+
+TEST(Add, AddScalar) {
+    Shape shape = Shape({4, 5});
+    const Tensor<int> t = Tensor<int>::arange(0, 20, 1).reshape(shape);
+
+    t.addScalar(10);
+
+    EXPECT_EQ(t.data()[0], 10);
+    EXPECT_EQ(t.data()[19], 29);
+}
+
+TEST(Mul, MulScalar) {
+    Shape shape = Shape({4, 5});
+    const Tensor<int> t = Tensor<int>::arange(0, 20, 1).reshape(shape);
+
+    t.mulScalar(10);
+
+    EXPECT_EQ(t.data()[0], 0);
+    EXPECT_EQ(t.data()[19], 190);
+}

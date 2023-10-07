@@ -129,6 +129,38 @@ Tensor<T> Tensor<T>::sub(int start, int end) const {
     return Tensor(this->mem + start * stride, subShape);
 }
 
+template <typename T>
+void Tensor<T>::addScalar(T scalar) {
+    size_t size = this->_shape.size;
+    for (int i = 0; i < size; i++) {
+        this->mem[i] += scalar;
+    }
+}
+
+template <typename T>
+void Tensor<T>::addScalar(T scalar) const {
+    size_t size = this->_shape.size;
+    for (int i = 0; i < size; i++) {
+        this->mem[i] += scalar;
+    }
+}
+
+template <typename T>
+void Tensor<T>::mulScalar(T scalar) {
+    size_t size = this->_shape.size;
+    for (int i = 0; i < size; i++) {
+        this->mem[i] *= scalar;
+    }
+}
+
+template <typename T>
+void Tensor<T>::mulScalar(T scalar) const {
+    size_t size = this->_shape.size;
+    for (int i = 0; i < size; i++) {
+        this->mem[i] *= scalar;
+    }
+}
+
 template<>
 Tensor<int> Tensor<int>::random(Shape shape, int min, int max){
     size_t size = shape.size;

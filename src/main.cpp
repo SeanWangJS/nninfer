@@ -1,16 +1,24 @@
 #include <iostream> 
-
-#include <variant>
+#include <fstream>
+#include <vector>
+#include <string>
 
 
 int main(int argc, char** argv) {
 
-    std::variant<std::pair<int, int>, int> kernel_size = 1;
-    std::cout << kernel_size.index() << std::endl;
+    std::string path = "./data/data.npy";
 
-    // kernel_size = std::make_pair(1, 2);
-    // std::cout << kernel_size.index() << std::endl;
+    std::ifstream infile(path, std::ios::binary);
+    
+    char header[118];
+    infile.read(header, 118);
 
-    int d = std::get<int>(kernel_size);
-    std::cout << d << std::endl;
+    std::cout << header << std::endl;
+
+    std::vector<int> shape;
+    int ndim;
+    infile.read(reinterpret_cast<char*>(&ndim), sizeof(int));
+    std::cout << "ndim: " << ndim << std::endl;
+
+
 }

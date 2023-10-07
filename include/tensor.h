@@ -46,6 +46,20 @@ namespace tensor {
 
         Tensor<T> sub(int start, int end);
 
+        /**
+         * \brief Add a scalar value
+         * **/
+        void addScalar(T scalar);
+
+        void addScalar(T scalar) const;
+
+        /**
+         * \brief Multiple a scalar value
+         * **/
+        void mulScalar(T scalar);
+
+        void mulScalar(T scalar) const;
+
         static Tensor<T> random(Shape shape, int min = 0, int max = 1);
 
         static Tensor<T> zeros(Shape shape);
@@ -54,7 +68,6 @@ namespace tensor {
 
         static Tensor<T> arange(size_t start, size_t end, int step = 1);
 
-        
     };
 
     template<typename T>
@@ -141,6 +154,21 @@ namespace tensor {
         return os;
     }
 
+    // /**
+    //  * \brief Add a scalar number to a tensor
+    //  * 
+    //  **/
+    // template<typename T>
+    // Tensor<T> operator+(const Tensor<T> &tensor, const T &num) {
+    //     Shape shape = tensor.shape();
+    //     size_t size = shape.size;
+    //     T* data = tensor.data();
+    //     T* newData = new T[size];
+    //     for(int i = 0; i < size; i++) {
+    //         newData[i] = data[i] + num;
+    //     }
+    //     return Tensor<T>(newData, shape);
+    // }
 
 
 } // namespace tensor

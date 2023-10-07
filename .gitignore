@@ -1,6 +1,7 @@
-prompts/
 .vscode/
+prompts/
 build/
+data/
 *.ipynb
 *.exe
 *.obj
