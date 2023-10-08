@@ -1,7 +1,9 @@
 #include <iostream>
 
-#include "ops/convolution.h"
 #include <gtest/gtest.h>
+
+#include "ops/convolution.h"
+#include "ops/batch_norm.h"
 
 using namespace nninfer::ops;
 
@@ -271,18 +273,66 @@ TEST(Conv2dNaiveTest, MultipleGroups) {
 
 }
 
-// // Test that the function produces the correct output when using groups
-// TEST(Conv2dNaiveTest, UseGroups) {
-//     Tensor<float> input({2, 3, 3}, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34});
-//     Tensor<float> kernel({2, 2, 2}, {1, 2, 3, 4, 5, 6, 7, 8});
-//     Tensor<float> output({2, 2, 2}, {0, 0, 0, 0, 0, 0, 0, 0});
-//     int stride_x = 1;
-//     int stride_y = 1;
-//     int padding_x = 0;
-//     int padding_y = 0;
-//     int groups = 2;
-//     int use_bias = 0;
-//     conv2d_naive(input, kernel, output, stride_x, stride_y, padding_x, padding_y, groups);
-//     Tensor<float> expected_output({2, 2, 2}, {37, 47, 67, 77, 157, 167, 187, 197});
-//     EXPECT_EQ(output, expected_output);
-// }
+TEST(BatchNormTest, Test1) {
+    // Test batch_norm with a single channel
+    float data[] = {1, 2, 3, 4};
+    float running_mean[] = {2};
+    float running_var[] = {1};
+    float weight[] = {1};
+    float bias[] = {0};
+    float expected[] = {-1, 0, 1, 2};
+    float eps = 1e-5f;
+    Tensor<float> data_tensor(data, {1, 1, 2, 2});
+    Tensor<float> running_mean_tensor(running_mean, {1});
+    Tensor<float> running_var_tensor(running_var, {1});
+    Tensor<float> weight_tensor(weight, {1});
+    Tensor<float> bias_tensor(bias, {1});
+    batch_norm(data_tensor, running_mean_tensor, running_var_tensor, weight_tensor, bias_tensor, eps);
+    for (int i = 0; i < 4; i++) {
+        ASSERT_NEAR(data[i], expected[i], 0.001);
+    }
+}
+
+TEST(BatchNormTest, Test2) {
+    // Test batch_norm with multiple channels
+    float data[] = {1, 2, 3, 4, 5, 6, 7, 8};
+    float running_mean[] = {2, 4};
+    float running_var[] = {1, 2};
+    float weight[] = {1, 2};
+    float bias[] = {0, 1};
+    float expected[] = {-1, 0, 1, 2, 2.4142f, 3.8284f, 5.2426f, 6.6568f};
+    float eps = 1e-5f;
+    Tensor<float> data_tensor(data, {1, 2, 2, 2});
+    Tensor<float> running_mean_tensor(running_mean, {2});
+    Tensor<float> running_var_tensor(running_var, {2});
+    Tensor<float> weight_tensor(weight, {2});
+    Tensor<float> bias_tensor(bias, {2});
+    batch_norm(data_tensor, running_mean_tensor, running_var_tensor, weight_tensor, bias_tensor, eps);
+    for (int i = 0; i < 8; i++) {
+        ASSERT_NEAR(data[i], expected[i], 0.001);
+    }
+}
+
+TEST(BatchNormTest, Test3) {
+    // Test batch_norm with batch size > 1
+    Shape data_shape = Shape({4, 2, 3, 3});
+    Shape running_mean_shape = Shape({2});
+    Shape running_var_shape = Shape({2});
+    Shape weight_shape = Shape({2});
+    Shape bias_shape = Shape({2});
+
+    Tensor<float> data = Tensor<float>::arange(1, data_shape.size + 1, 1).reshape(data_shape);
+    float running_mean[] = {2, 4};
+    float running_var[] = {1, 2};
+    float weight[] = {1, 2};
+    float bias[] = {0, 1};
+    float eps = 1e-5f;
+    Tensor<float> running_mean_tensor(running_mean, running_mean_shape);
+    Tensor<float> running_var_tensor(running_var, running_var_shape);
+    Tensor<float> weight_tensor(weight, weight_shape);
+    Tensor<float> bias_tensor(bias, bias_shape);
+    batch_norm(data, running_mean_tensor, running_var_tensor, weight_tensor, bias_tensor, eps);
+
+    ASSERT_NEAR(data.sub(0).sub(0).data()[0], -1, 0.001);
+    ASSERT_NEAR(data.sub(3).sub(1).data()[8], 97.1663, 0.001);
+}
