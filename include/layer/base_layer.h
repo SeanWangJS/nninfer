@@ -1,5 +1,8 @@
 #include "tensor.h"
 
+#ifndef BASE_LAYER_H
+#define BASE_LAYER_H
+
 using namespace nninfer::tensor;
 
 namespace nninfer
@@ -21,3 +24,5 @@ class BaseLayer{
 
     
 } // namespace nninfer
+
+#endif // BASE_LAYER_H

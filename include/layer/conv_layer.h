@@ -1,9 +1,9 @@
 #include <variant>
 
 #include "base_layer.h"
-#include "ops/convolution.h"
 
-namespace nninfer {
+namespace nninfer 
+{
 
 namespace layer
 {
