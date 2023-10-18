@@ -1,7 +1,9 @@
 #include <variant>
 
 #include "layer/pool_layer.h"
+#include "ops/max_pool.h"
 
+using namespace nninfer::ops;
 
 namespace nninfer
 {
@@ -48,13 +50,29 @@ MaxPool2d<T>::MaxPool2d(std::variant<std::pair<int, int>, int> kernel_size,
 template<typename T>
 void MaxPool2d<T>::forward(const Tensor<T> &input, Tensor<T> &output)
 {
-    throw std::exception("Not implemented");
+    max_pool2d(input, output, 
+               this->kernel_size.first, this->kernel_size.second,
+               this->stride.first, this->stride.second,
+               this->padding.first, this->padding.second);
 }
 
 template<typename T>
 Tensor<T> MaxPool2d<T>::forward(const Tensor<T> &input)
 {
-    return input;
+    int iw = input.shape()[2];
+    int ih = input.shape()[3];
+    int ow = (iw + 2 * padding.first - kernel_size.first) / stride.first + 1;
+    int oh = (ih + 2 * padding.second - kernel_size.second) / stride.second + 1;
+
+    Shape output_shape = Shape({input.shape()[0], input.shape()[1], ow, oh});
+    Tensor<T> output = Tensor<T>::zeros(output_shape);
+
+    max_pool2d(input, output, 
+               this->kernel_size.first, this->kernel_size.second,
+               this->stride.first, this->stride.second,
+               this->padding.first, this->padding.second);
+
+    return output;
 }
 
 } // namespace layer

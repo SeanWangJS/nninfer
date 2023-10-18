@@ -360,44 +360,52 @@ TEST(MaxPool2d, BasicSetting) {
     EXPECT_EQ(output.sub(0).sub(0).data()[24], 100); // second element
 }
 
-// TEST(MaxPool2d, Forward) {
+// Test that the function produces the correct output for multiple channels
+TEST(MaxPool2d, MultipleChannels) {
 
-//     Shape input_shape = Shape({2, 3, 4, 4});
-//     Shape output_shape = Shape({2, 3, 2, 2});
+    Shape input_shape = Shape({1, 3, 10, 10});
+    Shape output_shape = Shape({1, 3, 2, 2});
 
-//     Tensor<float> input = Tensor<float>::arange(1, input_shape.size + 1, 1).reshape(input_shape);
-//     Tensor<float> output = Tensor<float>::zeros(output_shape);
+    Tensor<float> input = Tensor<float>::arange(1, input_shape.size + 1, 1).reshape(input_shape);
+    Tensor<float> output = Tensor<float>::zeros(output_shape);
 
-//     int kernel_x = 2;
-//     int kernel_y = 2;
-//     int stride_x = 2;
-//     int stride_y = 2;
-//     int padding_x = 0;
-//     int padding_y = 0;
+    int kernel_x = 5;
+    int kernel_y = 5;
+    int stride_x = 5;
+    int stride_y = 5;
+    int padding_x = 0;
+    int padding_y = 0;
 
-//     max_pool2d(input, output, kernel_x, kernel_y, stride_x, stride_y, padding_x, padding_y);
+    max_pool2d(input, output, kernel_x, kernel_y, stride_x, stride_y, padding_x, padding_y);
 
-//     EXPECT_EQ(output.sub(0).sub(0).data()[0], 6); // first element
-//     EXPECT_EQ(output.sub(1).sub(1).data()[3], 22); // last element
-// }
+    EXPECT_EQ(output.sub(0).sub(0).data()[0], 45); // first element
+    EXPECT_EQ(output.sub(0).sub(2).data()[3], 300); // second element
+}
 
-// TEST(MaxPool2d, ForwardWithPadding) {
+// Test that the function produces the correct output when using stride != kernel_size
+TEST(MaxPool2d, KernelNotEqualToStride) {
 
-//     Shape input_shape = Shape({2, 3, 5, 5});
-//     Shape output_shape = Shape({2, 3, 3, 3});
+    int iw = 10;
+    int ih = 10;
+    int kernel_x = 5;
+    int kernel_y = 5;
+    int stride_x = 3;
+    int stride_y = 3;
+    int padding_x = 0;
+    int padding_y = 0;
 
-//     Tensor<float> input = Tensor<float>::arange(1, input_shape.size + 1, 1).reshape(input_shape);
-//     Tensor<float> output = Tensor<float>::zeros(output_shape);
+    int ow = (iw + 2 * padding_x - kernel_x) / stride_x + 1;
+    int oh = (ih + 2 * padding_y - kernel_y) / stride_y + 1;
 
-//     int kernel_x = 3;
-//     int kernel_y = 3;
-//     int stride_x = 1;
-//     int stride_y = 1;
-//     int padding_x = 1;
-//     int padding_y = 1;
+    Shape input_shape = Shape({1, 3, ih, ih});
+    Shape output_shape = Shape({1, 3, oh, ow});
 
-//     max_pool2d(input, output, kernel_x, kernel_y, stride_x, stride_y, padding_x, padding_y);
+    Tensor<float> input = Tensor<float>::arange(1, input_shape.size + 1, 1).reshape(input_shape);
+    Tensor<float> output = Tensor<float>::zeros(output_shape);
 
-//     EXPECT_EQ(output.sub(0).sub(0).data()[0], 13); // first element
-//     EXPECT_EQ(output.sub(1).sub(1).data()[8], 38); // last element
-// }
+
+    max_pool2d(input, output, kernel_x, kernel_y, stride_x, stride_y, padding_x, padding_y);
+
+    EXPECT_EQ(output.sub(0).sub(0).data()[0], 45); // first element
+    EXPECT_EQ(output.sub(0).sub(2).data()[3], 278); // last element
+}

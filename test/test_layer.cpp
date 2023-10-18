@@ -3,6 +3,8 @@
 #include "tensor.h"
 #include "layer/bn_layer.h"
 #include "layer/conv_layer.h"
+#include "layer/pool_layer.h"
+#include "math_op.h"
 
 using namespace nninfer::layer;
 // using namespace nninfer::tensor;
@@ -144,5 +146,40 @@ TEST(TestBatchNormLayer, Forward) {
 
     ASSERT_NEAR(output.sub(0).sub(0).data()[0], -1, 0.001);
     ASSERT_NEAR(output.sub(3).sub(1).data()[8], 97.1663, 0.001);
+
+}
+
+TEST(TestMaxpool2d, Construtor) {
+
+    MaxPool2d<float> maxpool2d_layer(5, 5, 0, 0, false);
+
+    EXPECT_EQ(maxpool2d_layer.kernel_size.first, 5);
+    EXPECT_EQ(maxpool2d_layer.kernel_size.second, 5);
+    EXPECT_EQ(maxpool2d_layer.stride.first, 5);
+    EXPECT_EQ(maxpool2d_layer.stride.second, 5);
+    EXPECT_EQ(maxpool2d_layer.padding.first, 0);
+    EXPECT_EQ(maxpool2d_layer.padding.second, 0);
+    EXPECT_EQ(maxpool2d_layer.dilation.first, 0);
+    EXPECT_EQ(maxpool2d_layer.dilation.second, 0);
+
+}
+
+TEST(TestMaxpool2d, Forward) {
+
+    
+    Shape input_shape = Shape({1, 3, 10, 10});
+    Shape output_shape = Shape({1, 3, 2, 2});
+
+    Tensor<float> input = Tensor<float>::arange(1, input_shape.size + 1, 1).reshape(input_shape);
+
+    int kernel = 5;
+    int stride = 5;
+    int padding = 0;
+
+    MaxPool2d<float> maxpool2d_layer(kernel, stride, padding, 0, false);
+
+    Tensor<float> output = maxpool2d_layer.forward(input);
+    EXPECT_EQ(output.sub(0).sub(0).data()[0], 45); // first element
+    EXPECT_EQ(output.sub(0).sub(2).data()[3], 300); // second element
 
 }

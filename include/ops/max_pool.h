@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "tensor.h"
 #include "shape.h"
 #include "ops/utils.h"
